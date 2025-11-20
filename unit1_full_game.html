@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<title>G1 Science Unit 1 Engineers & Technology</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+*{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;}
+body{margin:0;padding:0;background:linear-gradient(135deg,#fef3c7,#e0f2fe);min-height:100vh;display:flex;justify-content:center;align-items:center;}
+.game-container{background:#fff;border-radius:20px;box-shadow:0 10px 25px rgba(15,23,42,0.15);max-width:480px;width:100%;padding:20px;}
+.title{text-align:center;font-size:1.3rem;font-weight:800;margin-bottom:6px;color:#1e293b;}
+.subtitle{text-align:center;font-size:0.9rem;color:#64748b;margin-bottom:14px;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#fee2e2;color:#b91c1c;border-radius:999px;padding:4px 10px;font-size:0.8rem;margin:0 auto 10px;}
+.screen{display:none;}
+.screen.active{display:block;}
+.btn{width:100%;padding:12px 14px;margin-top:10px;border-radius:999px;border:none;font-size:1rem;font-weight:600;cursor:pointer;}
+.btn-primary{background:#2563eb;color:#fff;}
+.btn-choice{background:#f3f4f6;color:#111827;text-align:left;}
+.btn-next{background:#22c55e;color:#fff;}
+.btn.disabled{opacity:0.7;cursor:default;}
+.question-header{display:flex;justify-content:space-between;font-size:0.9rem;color:#6b7280;margin-bottom:8px;}
+.progress-bar{width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-bottom:14px;}
+.progress-fill{height:100%;width:0%;background:#22c55e;transition:width .25s;}
+.question-text{font-size:1.05rem;font-weight:700;margin-bottom:4px;color:#111;}
+.question-subtext{font-size:0.85rem;color:#555;margin-bottom:12px;}
+.feedback{margin-top:12px;font-size:0.9rem;padding:8px 10px;border-radius:12px;}
+.feedback.correct{background:#dcfce7;color:#15803d;}
+.feedback.incorrect{background:#fee2e2;color:#b91c1c;}
+.badge-large{margin:16px auto;width:120px;height:120px;border-radius:50%;background:#facc15;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.score-text{text-align:center;margin-top:8px;color:#444;}
+</style>
+</head>
+<body>
+<div class="game-container">
+<div class="screen active" id="screen-intro">
+<div class="badge">🛠 G1 Unit 1</div>
+<div class="title">Engineers & Technology</div>
+<div class="subtitle">English + 中文雙語版</div>
+<button class="btn btn-primary" id="btn-start">Start 開始</button>
+</div>
+
+<div class="screen" id="screen-question">
+<div class="question-header">
+<div id="question-number"></div>
+<div id="question-score"></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="question-text" id="question-text"></div>
+<div class="question-subtext" id="question-subtext"></div>
+<div id="choices-container"></div>
+<div id="feedback" class="feedback" style="display:none"></div>
+<button class="btn btn-next disabled" id="btn-next">Next 下一題</button>
+</div>
+
+<div class="screen" id="screen-result">
+<div class="title">Great job!</div>
+<div class="subtitle">You finished Unit 1 🎉</div>
+<div class="badge-large"><strong>Engineer</strong></div>
+<div class="score-text" id="final-score-text"></div>
+<button class="btn btn-primary" id="btn-restart">Play Again 再玩一次</button>
+</div>
+</div>
+
+<script>
+const questions = [
+{
+text:"Q1. What is technology? 什麼是科技？",
+subtext:"Technology = things people make to solve problems.",
+choices:[
+"A. Things found in nature 大自然中的東西",
+"B. Things people make to solve problems 人們做的東西",
+"C. Things animals use 動物使用的東西"
+],
+correctIndex:1,
+explanation:"科技是人類製造來解決問題的東西。"
+},
+{
+text:"Q2. Which object is technology? 哪個是科技？",
+subtext:"Technology is human-made.",
+choices:[
+"A. A tree 樹",
+"B. A pencil 鉛筆",
+"C. A river 河流"
+],
+correctIndex:1,
+explanation:"鉛筆是人造工具，是科技。"
+},
+{
+text:"Q3. What does an engineer do? 工程師做什麼？",
+subtext:"Engineers solve problems.",
+choices:[
+"A. Solve problems with science 用科學解決問題",
+"B. Watch videos 看影片",
+"C. Play games 玩遊戲"
+],
+correctIndex:0,
+explanation:"工程師用科學與設計解決問題。"
+},
+{
+text:"Q4. What is a problem? 什麼是問題？",
+subtext:"A problem is something people want to change.",
+choices:[
+"A. Something people want to change 想改善的事",
+"B. Something perfect 完美的事",
+"C. Something fun 好玩的事"
+],
+correctIndex:0,
+explanation:"問題是需要改善的事情。"
+},
+{
+text:"Q5. Good solution for heavy backpack? 書包太重怎麼辦？",
+subtext:"Engineers match solutions to problems.",
+choices:[
+"A. Add more books 放更多書",
+"B. Do nothing 什麼都不做",
+"C. Use a backpack with wheels 用拉桿書包"
+],
+correctIndex:2,
+explanation:"拉桿書包能減少重量負擔。"
+},
+{
+text:"Q6. Correct design process order? 設計流程順序？",
+subtext:"Ask → Imagine → Plan → Create → Improve",
+choices:[
+"A. Ask → Imagine → Plan → Create → Improve",
+"B. Imagine → Improve → Ask → Plan → Create",
+"C. Create → Plan → Ask → Improve → Imagine"
+],
+correctIndex:0,
+explanation:"正確流程是：詢問 → 想像 → 計畫 → 製作 → 改進。"
+},
+{
+text:"Q7. Which is evidence? 哪個是證據？",
+subtext:"Evidence is what you can observe or measure.",
+choices:[
+"A. I think it works 我覺得有效",
+"B. My friend likes it 朋友喜歡",
+"C. The bridge held 10 blocks 撐住10個積木"
+],
+correctIndex:2,
+explanation:"可測量的數據才是證據。"
+},
+{
+text:"Q8. Tower falls down—what should engineer do? 塔倒了怎麼辦？",
+subtext:"Engineers improve designs.",
+choices:[
+"A. Give up 放棄",
+"B. Improve and try again 改進再試",
+"C. Break everything 全部打掉"
+],
+correctIndex:1,
+explanation:"工程師會改進後再測試。"
+}
+];
+
+let currentIndex=0,score=0,answered=false;
+
+const sIntro=document.getElementById("screen-intro");
+const sQ=document.getElementById("screen-question");
+const sR=document.getElementById("screen-result");
+
+const btnStart=document.getElementById("btn-start");
+const btnNext=document.getElementById("btn-next");
+const btnRestart=document.getElementById("btn-restart");
+
+const qNum=document.getElementById("question-number");
+const qScore=document.getElementById("question-score");
+const qText=document.getElementById("question-text");
+const qSub=document.getElementById("question-subtext");
+const choices=document.getElementById("choices-container");
+const feedback=document.getElementById("feedback");
+const progress=document.getElementById("progress-fill");
+const finalScore=document.getElementById("final-score-text");
+
+function show(screen){
+[sIntro,sQ,sR].forEach(s=>s.classList.remove("active"));
+screen.classList.add("active");
+}
+
+function updateProgress(){
+progress.style.width = (currentIndex/questions.length)*100 + "%";
+}
+
+function renderQ(){
+answered=false;
+btnNext.classList.add("disabled");
+feedback.style.display="none";
+const q=questions[currentIndex];
+qNum.textContent=`Question ${currentIndex+1}/${questions.length}`;
+qScore.textContent=`Score: ${score}`;
+qText.textContent=q.text;
+qSub.textContent=q.subtext;
+choices.innerHTML="";
+q.choices.forEach((c,i)=>{
+let b=document.createElement("button");
+b.className="btn btn-choice";
+b.textContent=c;
+b.onclick=()=>choose(i,b);
+choices.appendChild(b);
+});
+updateProgress();
+}
+
+function choose(i,btn){
+if(answered)return;
+answered=true;
+const q=questions[currentIndex];
+document.querySelectorAll(".btn-choice").forEach(b=>b.disabled=true);
+if(i===q.correctIndex){
+score++;
+btn.style.background="#bbf7d0";
+feedback.className="feedback correct";
+feedback.textContent="Correct! / 答對了！ " + q.explanation;
+}else{
+btn.style.background="#fecaca";
+let correctBtn=document.querySelectorAll(".btn-choice")[q.correctIndex];
+correctBtn.style.background="#bbf7d0";
+feedback.className="feedback incorrect";
+feedback.textContent="Try again! 正確是： " + q.explanation;
+}
+feedback.style.display="block";
+btnNext.classList.remove("disabled");
+}
+
+function showResult(){
+show(sR);
+finalScore.textContent=`Your score: ${score}/${questions.length}`;
+}
+
+btnStart.onclick=()=>{currentIndex=0;score=0;show(sQ);renderQ();}
+btnNext.onclick=()=>{
+if(btnNext.classList.contains("disabled"))return;
+currentIndex++;
+if(currentIndex>=questions.length)showResult();else renderQ();
+};
+btnRestart.onclick=()=>{currentIndex=0;score=0;show(sQ);renderQ();}
+</script>
+</body>
+</html>
