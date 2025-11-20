@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>Science Grade 1 – Unit 1 Review（亮色可愛版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #fdf2ff, #e0f2fe);
+      color: #1f2933;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .app-shell {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      background: #f9fafb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.4);
+    }
+    .status-bar {
+      height: 20px;
+      padding: 8px 16px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #6b7280;
+      background: rgba(255,255,255,0.9);
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
+    }
+    .status-right span {
+      margin-left: 4px;
+      cursor: pointer;
+    }
+
+    .game-screen {
+      flex: 1;
+      padding: 12px 18px 18px;
+      display: none;
+    }
+    .game-screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .avatar-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 20%, #f97316, #facc15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 10px 20px rgba(251,146,60,0.7);
+      animation: avatarFloat 3.5s ease-in-out infinite;
+    }
+    @keyframes avatarFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px) rotate(-3deg); }
+    }
+    .avatar-info-title {
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+    .avatar-info-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .score-pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.7rem;
+      min-width: 96px;
+      text-align: right;
+      color: #4b5563;
+    }
+    .score-pill strong {
+      font-size: 0.95rem;
+      color: #f97316;
+    }
+
+    .card {
+      margin-top: 6px;
+      flex: 1;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 16px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 26px rgba(148,163,184,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: #0f172a;
+    }
+    .screen-subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .big-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      background: linear-gradient(90deg,#38bdf8,#22c55e);
+      color: #022c22;
+      box-shadow: 0 10px 22px rgba(56,189,248,0.6);
+      margin-top: auto;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.08s ease;
+    }
+    .big-btn:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 6px 14px rgba(56,189,248,0.6);
+      filter: brightness(0.96);
+    }
+
+    .hint-text {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg,#f97316,#facc15);
+      transition: width 0.25s ease;
+    }
+
+    .question-main {
+      margin-bottom: 10px;
+      animation: fadeUp 0.25s ease-out;
+    }
+    .question-text {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .question-sub {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 80px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 2px dashed #38bdf8;
+      text-align: center;
+      margin: 0 4px;
+      font-weight: 700;
+      color: #0ea5e9;
+      background: #f0f9ff;
+      animation: blankPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes blankPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.3); }
+      50% { box-shadow: 0 0 0 6px rgba(56,189,248,0); }
+    }
+
+    .word-bank-title {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .word-pill {
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: none;
+      color: #111827;
+      cursor: pointer;
+      background: #e0f2fe;
+      box-shadow: 0 4px 10px rgba(148,163,184,0.45);
+      transition: transform 0.09s ease, box-shadow 0.09s ease, opacity 0.12s ease, background 0.12s ease;
+    }
+    .word-pill:nth-child(4n+1){ background:#fee2e2; }
+    .word-pill:nth-child(4n+2){ background:#fef3c7; }
+    .word-pill:nth-child(4n+3){ background:#dcfce7; }
+    .word-pill:nth-child(4n+4){ background:#e0f2fe; }
+    .word-pill:active {
+      transform: translateY(2px) scale(0.96);
+      box-shadow: 0 2px 6px rgba(148,163,184,0.6);
+    }
+    .word-pill.used {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .word-pill.correct-anim {
+      animation: pillBounce 0.4s ease-out;
+      background: #bbf7d0 !important;
+    }
+    .word-pill.wrong-anim {
+      animation: pillShake 0.3s ease-out;
+      background: #fecaca !important;
+    }
+
+    @keyframes pillBounce {
+      0% { transform: translateY(0) scale(0.9); }
+      40% { transform: translateY(-3px) scale(1.06); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    @keyframes pillShake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
+    }
+
+    .feedback {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      border-radius: 14px;
+      display: none;
+    }
+    .feedback.ok {
+      background: #ecfdf5;
+      border: 1px solid #6ee7b7;
+      color: #166534;
+    }
+    .feedback.bad {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    .nav-bar {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 20px 10px;
+      border-top: 1px solid #e5e7eb;
+      background: rgba(255,255,255,0.95);
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+    .nav-btn {
+      flex: 1;
+      text-align: center;
+      padding: 6px 0;
+      cursor: default;
+    }
+    .nav-btn.main {
+      font-weight: 600;
+      color: #4b5563;
+    }
+
+    .transition-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(254,249,195,0.95), rgba(224,242,254,0.95));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+    }
+    .transition-overlay.show {
+      display: flex;
+      animation: fadeInOut 0.8s ease-out forwards;
+    }
+    .transition-level {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #92400e;
+    }
+    .transition-text {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: scale(1.05); }
+      20% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.98); }
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-stars {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px 0 2px;
+      font-size: 1.5rem;
+    }
+    .result-stars span {
+      filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+    }
+    .result-score-text {
+      text-align: center;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .result-best-text {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .app-shell {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="status-bar">
+      <div class="status-left">
+        <div class="status-dot"></div>
+        <span>Unit 1 Review</span>
+      </div>
+      <div class="status-right">
+        <span>🔊</span><span id="status-sound">ON</span>
+      </div>
+    </div>
+
+    <div class="transition-overlay" id="transition">
+      <div class="transition-level" id="transition-level">Q1</div>
+      <div class="transition-text">Next question is coming! 下一題準備好了～</div>
+    </div>
+
+    <!-- Start Screen -->
+    <div class="game-screen active" id="screen-start">
+      <div class="top-bar">
+        <div class="avatar-area">
+          <div class="avatar">👷‍♀️</div>
+          <div>
+            <div class="avatar-info-title">Player</div>
+            <div class="avatar-info-name">Little Engineer</div>
+          </div>
+        </div>
+        <div class="score-pill">
+          <span>Best 高分紀錄</span>
+          <strong id="best-score">--</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="screen-title">Science G1 – Unit 1 Review</div>
+        <div class="screen-subtitle">
+          Engineering & Technology 單字填空小遊戲：從「單字糖果」中選一個放進句子裡。
+        </div>
+        <p style="font-size:0.9rem;color:#4b5563;margin-bottom:12px;">
+          遊戲說明：<br>
+          ・看英文句子＋中文提示<br>
+          ・從下面彩色單字中，點選正確答案填入空格<br>
+          ・答對會有可愛動畫 ✨ 看看你 12 題可以拿幾分！
+        </p>
+        <button class="big-btn" id="btn-start">START 開始複習</button>
+        <div class="hint-text">手機直立或橫放都可以，建議開啟聲音更有臨場感。</div>
+      </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div class="game-screen" id="screen-quiz">
+      <div class="top-bar">
+        <div class="avatar-area">
+          <div class="avatar">🛠️</div>
+          <div>
+            <div class="avatar-info-title">Unit 1 Review</div>
+            <div class="avatar-info-name">Key Words 練習</div>
+          </div>
+        </div>
+        <div class="score-pill">
+          <span>Score 本局分數</span>
+          <strong id="current-score">0 / 0</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="question-header">
+          <span id="question-counter">Q1 / 12</span>
+          <span id="question-label">Fill in the blank 填空</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress"></div>
+        </div>
+        <div class="question-main">
+          <div class="question-text" id="question-text"></div>
+          <div class="question-sub" id="question-sub"></div>
+        </div>
+        <div class="word-bank-title">Word bank 單字糖果（點一個放進空格）</div>
+        <div class="word-bank" id="word-bank"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="big-btn" id="btn-next" style="margin-top:12px;">Next ▶ 下一題</button>
+      </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="game-screen" id="screen-result">
+      <div class="top-bar">
+        <div class="avatar-area">
+          <div class="avatar">⭐</div>
+          <div>
+            <div class="avatar-info-title">Engineer Report</div>
+            <div class="avatar-info-name">Unit 1 Result</div>
+          </div>
+        </div>
+        <div class="score-pill">
+          <span>Best 高分紀錄</span>
+          <strong id="best-score-final">--</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="screen-title">複習完成！Great job!</div>
+        <div class="screen-subtitle">
+          你已經把 Unit 1 的關鍵字都練習過一輪，下一次可以挑戰更高分或請小朋友自己操作看看。
+        </div>
+        <div class="result-stars" id="result-stars"></div>
+        <div class="result-score-text" id="result-score-text"></div>
+        <div class="result-best-text" id="result-best-text"></div>
+        <button class="big-btn" id="btn-restart">PLAY AGAIN 再玩一次</button>
+        <div class="hint-text">把這個網址分享給同學或家長，大家一起當小小工程師 👷‍♀️👷‍♂️。</div>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-btn">Unit 1</div>
+      <div class="nav-btn main">Review Game</div>
+      <div class="nav-btn">G1 Science</div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        en: "The 5 steps engineers use to solve problems is the ____.",
+        zh: "工程師用來解決問題的 5 個步驟叫做 ________。",
+        answer: "Design process"
+      },
+      {
+        en: "An ____ uses math and science to fix problems.",
+        zh: "________ 會用數學和科學來解決問題。",
+        answer: "Engineer"
+      },
+      {
+        en: "A design process has ____ steps.",
+        zh: "設計流程總共有 ________ 個步驟。",
+        answer: "5"
+      },
+      {
+        en: "The final step in the design process is to ____.",
+        zh: "設計流程的最後一步是 ________（溝通、報告）。",
+        answer: "Communicate"
+      },
+      {
+        en: "Trees, rivers and the sun are NOT examples of ____.",
+        zh: "樹、河流和太陽都不是 ________ 的例子。",
+        answer: "Technology"
+      },
+      {
+        en: "Before we can solve a problem we have to ask a ____.",
+        zh: "在解決問題之前，我們必須先問一個 ________。",
+        answer: "Question"
+      },
+      {
+        en: "A ____ is something that is broken or needs fixed.",
+        zh: "________ 指的是壞掉了、需要被修好的事情。",
+        answer: "Problem"
+      },
+      {
+        en: "If your design doesn’t work or can be better you can ____ it.",
+        zh: "如果你的設計行不通或可以更好，你可以 ________ 它。",
+        answer: "Redesign"
+      },
+      {
+        en: "If you want to build something you can use a ____.",
+        zh: "如果你想建造東西，可以使用 ________。",
+        answer: "Hammer"
+      },
+      {
+        en: "The answer to a problem is a ____.",
+        zh: "用來回答、解決問題的東西叫做 ________。",
+        answer: "Solution"
+      },
+      {
+        en: "The second step in the design process is to ____ and build your solution.",
+        zh: "設計流程的第二步是 ________，並開始製作你的解決方案。",
+        answer: "Plan"
+      },
+      {
+        en: "Once you finish making and testing your solution you can make a ____.",
+        zh: "當你完成製作並測試解決方案後，就可以寫一份 ________。",
+        answer: "Report"
+      }
+    ];
+
+    const wordBankWords = [
+      "Problem","Solution","Technology","Report","Communicate",
+      "Hammer","Redesign","Steps","Plan","Question","Design process","Engineer","5"
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+    let bestScore = 0;
+    let soundOn = true;
+
+    const screenStart = document.getElementById("screen-start");
+    const screenQuiz = document.getElementById("screen-quiz");
+    const screenResult = document.getElementById("screen-result");
+    const transition = document.getElementById("transition");
+    const transitionLevel = document.getElementById("transition-level");
+    const statusSound = document.getElementById("status-sound");
+
+    const bestScoreEl = document.getElementById("best-score");
+    const bestScoreFinalEl = document.getElementById("best-score-final");
+    const currentScoreEl = document.getElementById("current-score");
+
+    const qCounter = document.getElementById("question-counter");
+    const qText = document.getElementById("question-text");
+    const qSub = document.getElementById("question-sub");
+    const progressEl = document.getElementById("progress");
+    const feedbackEl = document.getElementById("feedback");
+    const wordBankEl = document.getElementById("word-bank");
+
+    const resultStarsEl = document.getElementById("result-stars");
+    const resultScoreTextEl = document.getElementById("result-score-text");
+    const resultBestTextEl = document.getElementById("result-best-text");
+
+    const btnStart = document.getElementById("btn-start");
+    const btnNext = document.getElementById("btn-next");
+    const btnRestart = document.getElementById("btn-restart");
+
+    // audio
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+    }
+    function playBeep(type="ok") {
+      if (!soundOn) return;
+      initAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = "sine";
+      osc.frequency.value = type === "ok" ? 900 : 220;
+      const now = audioCtx.currentTime;
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    }
+
+    function showScreen(screen) {
+      [screenStart, screenQuiz, screenResult].forEach(s => s.classList.remove("active"));
+      screen.classList.add("active");
+    }
+
+    function loadBestScore() {
+      const saved = localStorage.getItem("unit1_review_best_pastel");
+      bestScore = saved ? parseInt(saved, 10) || 0 : 0;
+      bestScoreEl.textContent = bestScore ? bestScore + " / 12" : "--";
+    }
+    function saveBestScore() {
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("unit1_review_best_pastel", String(bestScore));
+      }
+    }
+    function updateProgress() {
+      const percent = (current / questions.length) * 100;
+      progressEl.style.width = percent + "%";
+    }
+
+    function renderQuestion() {
+      answered = false;
+      feedbackEl.style.display = "none";
+      feedbackEl.textContent = "";
+      const q = questions[current];
+
+      qCounter.textContent = "Q" + (current + 1) + " / " + questions.length;
+
+      const sentence = q.en.replace("____", "<span class='blank' id='blank'>____</span>");
+      qText.innerHTML = sentence;
+      qSub.textContent = q.zh;
+
+      currentScoreEl.textContent = score + " / " + questions.length;
+      updateProgress();
+
+      wordBankEl.innerHTML = "";
+      wordBankWords.forEach(word => {
+        const pill = document.createElement("button");
+        pill.className = "word-pill";
+        pill.textContent = word;
+        pill.addEventListener("click", () => handleChooseWord(word, pill));
+        wordBankEl.appendChild(pill);
+      });
+    }
+
+    function handleChooseWord(word, pill) {
+      if (answered) return;
+      const q = questions[current];
+      const blank = document.getElementById("blank");
+      if (!blank) return;
+
+      if (word === q.answer) {
+        answered = true;
+        blank.textContent = word;
+        pill.classList.add("correct-anim");
+        pill.classList.add("used");
+        score++;
+        feedbackEl.className = "feedback ok";
+        feedbackEl.textContent = "Correct! / 答對了！ " + q.zh;
+        feedbackEl.style.display = "block";
+        currentScoreEl.textContent = score + " / " + questions.length;
+        playBeep("ok");
+      } else {
+        pill.classList.add("wrong-anim");
+        feedbackEl.className = "feedback bad";
+        feedbackEl.textContent = "Nice try! 再想想～ 提示：答案是這句話裡最重要的關鍵字。";
+        feedbackEl.style.display = "block";
+        playBeep("bad");
+      }
+    }
+
+    function showTransition(nextIndex) {
+      transitionLevel.textContent = "Q" + (nextIndex + 1);
+      transition.classList.add("show");
+      setTimeout(() => {
+        transition.classList.remove("show");
+      }, 800);
+    }
+
+    function showResult() {
+      saveBestScore();
+      loadBestScore();
+      showScreen(screenResult);
+
+      resultStarsEl.innerHTML = "";
+      const total = questions.length;
+      const ratio = score / total;
+      const fullStars = Math.round(ratio * 5);
+      for (let i = 0; i < fullStars; i++) {
+        const span = document.createElement("span");
+        span.textContent = "⭐";
+        resultStarsEl.appendChild(span);
+      }
+      if (fullStars === 0) {
+        resultStarsEl.innerHTML = "<span>✨</span>";
+      }
+
+      resultScoreTextEl.textContent = "本局得分 Your score： " + score + " / " + total + " 題";
+      if (score === total) {
+        resultBestTextEl.textContent = "滿分！Perfect score！你已經超熟悉 Unit 1 所有關鍵字囉。";
+      } else if (ratio >= 0.6) {
+        resultBestTextEl.textContent = "很棒！Great work！再玩一次，挑戰更高分，像工程師一樣持續改進。";
+      } else {
+        resultBestTextEl.textContent = "沒關係，多複習幾次就會越來越熟，工程師也是這樣慢慢練習。";
+      }
+      bestScoreFinalEl.textContent = bestScore + " / 12";
+    }
+
+    btnStart.addEventListener("click", () => {
+      score = 0;
+      current = 0;
+      showScreen(screenQuiz);
+      showTransition(0);
+      setTimeout(() => {
+        renderQuestion();
+      }, 260);
+    });
+
+    btnNext.addEventListener("click", () => {
+      if (!answered) {
+        feedbackEl.className = "feedback bad";
+        feedbackEl.style.display = "block";
+        feedbackEl.textContent = "先選一個單字填入空格，再前往下一題喔。Please choose a word first.";
+        playBeep("bad");
+        return;
+      }
+      current++;
+      if (current >= questions.length) {
+        showResult();
+      } else {
+        showTransition(current);
+        setTimeout(() => {
+          renderQuestion();
+        }, 260);
+      }
+    });
+
+    btnRestart.addEventListener("click", () => {
+      score = 0;
+      current = 0;
+      showScreen(screenQuiz);
+      showTransition(0);
+      setTimeout(() => {
+        renderQuestion();
+      }, 260);
+    });
+
+    document.querySelector(".status-right").addEventListener("click", () => {
+      soundOn = !soundOn;
+      statusSound.textContent = soundOn ? "ON" : "OFF";
+    });
+
+    loadBestScore();
+  </script>
+</body>
+</html>
